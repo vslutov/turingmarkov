@@ -1,7 +1,10 @@
 SRC_DIR = turingmarkov
 GENERATED = build dist *.egg-info
 
-all : test lint pep257 dist
+all : test lint pep257 dist twine
+
+twine :
+	twine upload dist/*
 
 clean :
 	rm -rf $(GENERATED)

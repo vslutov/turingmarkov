@@ -9,7 +9,7 @@ import os
 from setuptools import setup, find_packages, Command
 
 setup(name='turingmarkov',
-      version='0.1.0',
+      version='0.1.1',
       description=__doc__,
       maintainer='vslutov',
       maintainer_email='vslutov@yandex.ru',
