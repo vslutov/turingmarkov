@@ -6,13 +6,16 @@ from turingmarkov.markov import Algorithm
 from pytest import raises
 
 def test_algorithm_init():
+    """Test if we can create empty algorithm and algorithm with rules."""
     algo = Algorithm()
     assert algo.rules == []
     algo = Algorithm(['aa -> a', 'bb -> b', 'cc -> c'])
     assert algo.rules == [('aa', 'a', 0), ('bb', 'b', 0), ('cc', 'c', 0)]
 
 class TestAlgorithm:
+
     """Test case for methods: add_rule, execute, execute_once."""
+
     algo = None
 
     def setup(self):
@@ -118,8 +121,7 @@ class TestAlgorithm:
 
     def test_algorithm_debug(self):
         """Not implemented."""
-        with raises(NotImplementedError):
-            self.algo.debug()
+        self.algo.debug()
 
     def test_algorithm_compile(self):
         """Return string with code."""

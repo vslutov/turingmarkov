@@ -45,7 +45,7 @@ class Algorithm:
 
     def debug(self):
         """Now it's nothing to do."""
-        raise NotImplementedError()
+        pass
 
     def execute_once(self, string):
         """Execute only one rule."""
@@ -86,6 +86,6 @@ class Algorithm:
             result += ("algo.add_rule('{left}{arrow}{right}')\n"
                        .format(left=quotted_rule[0], right=quotted_rule[1], arrow=arrow))
 
-        result += 'for line in stdin:\n'
-        result += '    print(algo.execute(''.join(line.split())))'
+        result += "for line in stdin:\n"
+        result += "    print(algo.execute(''.join(line.split())))"
         return result
