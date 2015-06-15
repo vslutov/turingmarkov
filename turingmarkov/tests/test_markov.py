@@ -138,7 +138,7 @@ class TestAlgorithm:
         assert "'#=>'" in algo
         assert "'->#'" in algo
 
-        # Test quotting
+    def test_algorithm_quoting(self):
         self.algo = Algorithm(["'x->xx'", "'=>", "->'"])
         algo = self.algo.compile()
         assert isinstance(algo, str)
