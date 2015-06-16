@@ -23,3 +23,9 @@ lint :
 
 pep257 :
 	pep257 $(SRC_DIR)
+
+install :
+	python setup.py build install
+
+develop :
+	python setup.py develop
