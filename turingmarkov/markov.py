@@ -2,7 +2,8 @@
 
 """Emulator of markov algothm."""
 
-TEMPLATE = """# -*- coding: utf-8 -*-
+TEMPLATE = """#!/bin/env python3
+# -*- coding: utf-8 -*-
 from turingmarkov.markov import Algorithm
 from sys import stdin
 algo = Algorithm()

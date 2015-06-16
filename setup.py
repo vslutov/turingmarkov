@@ -8,8 +8,10 @@ Read the doc: <https://github.com/vslutov/turingmarkov>"""
 import os
 from setuptools import setup, find_packages, Command
 
+VERSION = "0.1.2" # Don't forget fix in __main__.py
+
 setup(name='turingmarkov',
-      version='0.1.1',
+      version=VERSION,
       description=__doc__,
       maintainer='vslutov',
       maintainer_email='vslutov@yandex.ru',
@@ -30,5 +32,4 @@ setup(name='turingmarkov',
       install_requires=['pytest'],
       packages=find_packages(),
       include_package_data=True,
-      entry_points={'console_scripts': ['turingmarkov = turingmarkov.__main__:main']},
-      )
+      entry_points={'console_scripts': ['turingmarkov = turingmarkov.__main__:main']})

@@ -66,7 +66,7 @@ Emulator of turing machine and markov algorithm.
 Алгоритм Маркова нужно сначала скомпилировать в код на Python, а потом
 запустить. Несложная последовательность из двух комманд это делает:
 
-    turingmarkov compile-markov <source.markov >compiled.py
+    turingmarkov compile markov source.markov >compiled.py
     python compiled.py <input.txt >output.txt
 
 * source.markov - исходный алгоритм Маркова

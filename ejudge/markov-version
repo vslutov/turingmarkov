@@ -1,0 +1,95 @@
+#!/bin/sh
+
+# Ejudge binding for markov compiler.
+
+# Based on:
+# * https://ejudge.ru/wiki/index.php/Foo-version.in
+# * https://github.com/blackav/ejudge/tree/master/scripts
+
+LANG_CONFIG_DIR="/home/judges/compile/conf/lang.d"
+
+common_config() {
+  echo 'long_name="Markov Algorithm"'
+  echo 'short_name="markov"'
+  echo 'src_sfx=".markov"'
+  echo 'arch="linux-shared"'
+}
+
+failure() {
+  rm -f conftest*
+  echo 'version='
+  echo 'arg="'"${arg}"'"'
+  common_config
+  echo 'MARKOVPATH=/bin/false'
+  [ "${verbose}" = 1 ] && echo "no" >&2
+  exit 1
+}
+
+unset LANG
+unset LC_ALL
+unset LC_MESSAGES
+unset LANGUAGE
+
+if [ x"$1" = x-v ]
+then
+  verbose=1
+  shift
+fi
+
+# recheck the language
+if [ x"$1" = x-r ]
+then
+  arg="$2"
+  [ x"$2" != x ] && compiler="$2"
+  [ "${compiler}" = "" ] && compiler="turingmarkov"
+
+  [ "${verbose}" = 1 ] && echo -n "checking whether Markov Algorithm is available..." >&2
+  "${compiler}" -V >/dev/null 2>&1 || failure
+  version=`"${compiler}" version 2>&1 | gawk '{ print $2; }'` || failure
+  [ "${version}" != "" ] || failure
+  MARKOVPATH=`which "${compiler}"` || failure
+  [ "${MARKOVPATH}" != "" ] || failure
+  echo "a ->" > conftest.markov
+  ${MARKOVPATH} compile markov conftest.markov >/dev/null 2>&1 || failure
+
+  rm -f ./conftest*
+  echo 'version="'"${version}"'"'
+  echo 'arg="'"${arg}"'"'
+  common_config
+  echo 'MARKOVPATH="'"${MARKOVPATH}"'"'
+  [ "${verbose}" = 1 ] && echo "yes, ${MARKOVPATH}, ${version}" >&2
+  exit 0
+fi
+
+if [ x"$1" = x-l ]
+then
+  echo "Markov Algorithm [https://github.com/cmc-python/turingmarkov]"
+  exit 0
+fi
+
+[ "${EJUDGE_LANG_CONFIG}" = "" ] && EJUDGE_LANG_CONFIG="${LANG_CONFIG_DIR}/markov.cfg"
+
+if [ -f "${EJUDGE_LANG_CONFIG}" ]
+then
+  . "${EJUDGE_LANG_CONFIG}"
+else
+  MARKOVPATH=`which turingmarkov 2>/dev/null` || MARKOVPATH=/bin/false
+fi
+
+if [ x"${MARKOVPATH}" = x -o x"${MARKOVPATH}" = x/bin/false ]
+then
+  echo "This language is not supported." >&2
+  exit 1
+fi
+
+if [ x"$1" = x-p ]
+then
+    echo "${MARKOVPATH}"
+    exit 0
+fi
+
+"${MARKOVPATH}" version 2>/dev/null >/dev/null || exit 1
+
+[ x"$1" = x-f ] && echo -n "Markov Algorithm "
+
+"${MARKOVPATH}" version 2>&1 | gawk '{ print $2; }'

@@ -139,6 +139,7 @@ class TestAlgorithm:
         assert "'->#'" in algo
 
     def test_algorithm_quoting(self):
+        r"""' should transform to \' in compiled code."""
         self.algo = Algorithm(["'x->xx'", "'=>", "->'"])
         algo = self.algo.compile()
         assert isinstance(algo, str)
