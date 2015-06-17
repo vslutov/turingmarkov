@@ -54,13 +54,15 @@ class Machine:
         self.states[state].append(parsed_rule)
 
     def add_state(self, string):
-        """Add state and rules to machine"""
+        """Add state and rules to machine."""
         parsed_string = string.split()
         if len(parsed_string) > 0:
             state, rules = parsed_string[0], parsed_string[1:]
 
             if len(rules) != len(self.alphabet):
-                raise SyntaxError('Wrong count of rules: ' + string)
+                raise SyntaxError('Wrong count of rules ({cur}/{exp}): {string}'
+                                  .format(cur=len(rules), exp=len(self.alphabet),
+                                          string=string))
 
             if state in self.states or state == self.TERM_STATE:
                 raise SyntaxError('Double definition of state: ' + state)
@@ -95,7 +97,7 @@ class Machine:
         """Init system values."""
         for char in string:
             if char not in self.alphabet and not char.isspace() and char != self.EMPTY_SYMBOL:
-                raise RuntimeError('Invalid symbol: ' + char)
+                raise RuntimeError('Invalid symbol: "' + char + '"')
 
         self.check_semantic()
         self.state = self.START_STATE
@@ -146,3 +148,14 @@ class Machine:
 
         return self.get_tape()
 
+def build_machine(lines):
+    """Build machine from list of lines."""
+    if lines == []:
+        raise SyntaxError('Empty file')
+    else:
+        machine = Machine(lines[0].split())
+        for line in lines[1:]:
+            if line.strip() != '':
+                machine.add_state(line)
+    machine.check_semantic()
+    return machine

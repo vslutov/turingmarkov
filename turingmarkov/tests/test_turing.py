@@ -2,7 +2,7 @@
 
 """Test case for turing machine emulator."""
 
-from turingmarkov.turing import Machine
+from turingmarkov.turing import Machine, build_machine
 from pytest import raises
 
 def test_init():
@@ -137,3 +137,15 @@ class TestMachine:
         self.machine.add_state('0 ,R, ,N,! ,R,')
         with raises(TimeoutError):
             self.machine.execute('aaa', max_tacts=500)
+
+def test_build_machine():
+    """Input is array of strings."""
+    machine = build_machine(['a b c _', '0 ,R, ,R, ,R, a,N,!'])
+    assert machine.alphabet == ['a', 'b', 'c', '_']
+    assert machine.states == {'0': [['a', 'R', '0'],
+                                    ['b', 'R', '0'],
+                                    ['c', 'R', '0'],
+                                    ['a', 'N', '!']]}
+
+    with raises(SyntaxError):
+        build_machine([])

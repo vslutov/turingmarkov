@@ -2,8 +2,31 @@
 
 """Test case for cli part of turingmarkov package."""
 
-from turingmarkov.__main__ import main, VERSION, USAGE
+from turingmarkov.__main__ import main, load_markov, load_turing, VERSION, USAGE
 from pytest import raises
+
+def test_load_markov(tmpdir):
+    """Result should be Markov Algorithm."""
+    input_path = tmpdir.join('double.markov')
+    input_path.write('#x -> xx#\n\n# =>\n\n-> #\n')
+
+    markov = load_markov(['turingmarkov', 'run', 'markov', str(input_path)], None)
+    assert markov.rules == [('#x', 'xx#', 0), ('#', '', 1), ('', '#', 0)]
+
+    with open(str(input_path)) as stdin:
+        markov = load_markov(['turingmarkov', 'compile', 'markov'], stdin)
+    assert markov.rules == [('#x', 'xx#', 0), ('#', '', 1), ('', '#', 0)]
+
+def test_load_turing(tmpdir):
+    """Result should be Turing Machine."""
+    input_path = tmpdir.join('double.markov')
+    input_path.write('a b c _\n\n0 ,R, ,R, ,R, a,N,!\n')
+    machine = load_turing(['turingmarkov', 'run', 'turing', str(input_path)], None)
+    assert machine.alphabet == ['a', 'b', 'c', '_']
+    assert machine.states == {'0': [['a', 'R', '0'],
+                                    ['b', 'R', '0'],
+                                    ['c', 'R', '0'],
+                                    ['a', 'N', '!']]}
 
 def test_compile_markov(tmpdir):
     """Result should be python code."""
@@ -12,7 +35,7 @@ def test_compile_markov(tmpdir):
     output_path = tmpdir.join('double.py')
 
     with open(str(output_path), 'w') as stdout:
-        main(['turingpython', 'compile', 'markov', str(input_path)], None, stdout)
+        main(['turingmarkov', 'compile', 'markov', str(input_path)], None, stdout)
 
     algo = output_path.read()
     assert "# -*- coding: utf-8 -*-" in algo
@@ -23,7 +46,7 @@ def test_compile_markov(tmpdir):
 
     with open(str(input_path)) as stdin:
         with open(str(output_path), 'w') as stdout:
-            main(['turingpython', 'compile', 'markov'], stdin, stdout)
+            main(['turingmarkov', 'compile', 'markov'], stdin, stdout)
 
     algo = output_path.read()
     assert "# -*- coding: utf-8 -*-" in algo

@@ -3,6 +3,7 @@
 """turingmarkov - Turing machine and markov algorithm emulator."""
 
 from .markov import Algorithm
+from .turing import build_machine
 import pytest, os, sys
 
 VERSION = "0.1.3" # Don't forget fix in setup.py
@@ -17,16 +18,29 @@ Available commands:
     version        : print version and exit
     help           : print this help and exit'''
 
+def load_markov(argv, stdin):
+    """Load and return markov algorithm."""
+    if len(argv) > 3:
+        with open(argv[3]) as input_file:
+            return Algorithm(input_file.readlines())
+    else:
+        return Algorithm(stdin.readlines())
+
+def load_turing(argv, stdin):
+    """Load and return turing machine."""
+    if len(argv) > 3:
+        with open(argv[3]) as input_file:
+            return build_machine(input_file.readlines())
+    else:
+        return build_machine(stdin.readlines())
+
 def main(argv, stdin, stdout):
     """Execute, when user call turingmarkov."""
     if len(argv) > 1 and argv[1:3] == ["compile", "markov"]:
-        input_file = open(argv[3]) if len(argv) > 3 else stdin
-        algo = Algorithm(input_file.readlines())
-        input_file.close()
+        algo = load_markov(argv, stdin)
         print(algo.compile(), file=stdout)
     elif len(argv) == 4 and argv[1:3] == ["run", "markov"]:
-        with open(argv[3]) as input_file:
-            algo = Algorithm(input_file.readlines())
+        algo = load_markov(argv, stdin)
         for line in stdin:
             print(algo.execute(''.join(line.split())), file=stdout)
     elif len(argv) == 2 and argv[1] == "test":
