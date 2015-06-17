@@ -61,20 +61,20 @@ class TestAlgorithm:
         self.algo.add_rule('   -> #')
 
         string = 'xxx'
-        string = self.algo.execute(string, max_times=500)
+        string = self.algo.execute(string, max_tacts=500)
         assert string == 'xxxxxx'
         assert self.algo.last_rule == ('#', '', 1)
 
         self.algo = Algorithm(['aa -> a', 'bb -> b', 'cc -> c'])
 
         string = 'abbbaacc'
-        string = self.algo.execute(string, max_times=500)
+        string = self.algo.execute(string, max_tacts=500)
         assert string == 'abac'
         assert self.algo.last_rule is None
 
         self.algo = Algorithm(['x -> xx']) # Forever algo
         with raises(TimeoutError):
-            self.algo.execute('xxx', max_times=500)
+            self.algo.execute('xxx', max_tacts=500)
 
 
     def test_algorithm_execute_once(self):

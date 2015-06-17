@@ -7,6 +7,16 @@ import pytest, os, sys
 
 VERSION = "0.1.3" # Don't forget fix in setup.py
 
+USAGE = '''Usage: turingmarkov command [file]
+Available commands:
+    compile markov : make python code from markov algorithm and put to stdout
+    compile turing : make python code from turing machine and put to stdout
+    run markov     : run markov algorithm (from requred file); stdin->stdout
+    run turing     : run turing machine (from requred file); stdin->stdout
+    test           : run internal tests
+    version        : print version and exit
+    help           : print this help and exit'''
+
 def main(argv, stdin, stdout):
     """Execute, when user call turingmarkov."""
     if len(argv) > 1 and argv[1:3] == ["compile", "markov"]:
@@ -18,22 +28,17 @@ def main(argv, stdin, stdout):
         with open(argv[3]) as input_file:
             algo = Algorithm(input_file.readlines())
         for line in stdin:
-            print(algo.execute(''.join(line.split())))
+            print(algo.execute(''.join(line.split())), file=stdout)
     elif len(argv) == 2 and argv[1] == "test":
         path = os.path.abspath(os.path.dirname(__file__))
         argv[1] = path
         pytest.main()
     elif len(argv) == 2 and argv[1] == "version":
-        print("TuringMarkov", VERSION)
+        print("TuringMarkov", VERSION, file=stdout)
     else:
-        print('Usage: {name} command [file]'.format(name=argv[0]))
-        print('Available commands:')
-        print('  compile markov : make python code from markov algorithm and put to stdout')
-        print('  compile turing : make python code from turing machine and put to stdout')
-        print('  run markov     : run markov algorithm (from requred file); stdin->stdout')
-        print('  run turing     : run turing machine (from requred file); stdin->stdout')
-        print('  test           : run internal tests')
-        print('  version        : print version and exit')
+        print(USAGE, file=stdout)
+        if not (len(argv) == 2 and argv[1] == "help"):
+            exit(1)
 
 def exec_main():
     """Hook for testability."""

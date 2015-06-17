@@ -27,7 +27,7 @@ class Algorithm:
 
         for rule in rules:
             rule = rule.strip()
-            if len(rule) > 0:
+            if rule != '':
                 self.add_rule(rule)
 
     def add_rule(self, rule):
@@ -45,7 +45,7 @@ class Algorithm:
             self.rules.append(parsed_rule)
 
     def debug(self):
-        """Now it's nothing to do."""
+        """Now it do nothing."""
         pass
 
     def execute_once(self, string):
@@ -58,7 +58,7 @@ class Algorithm:
         self.last_rule = None
         return string
 
-    def execute(self, string, max_times=None):
+    def execute(self, string, max_tacts=None):
         """Execute algorithm (if max_times = None, there can be forever loop)."""
         counter = 0
         self.last_rule = None
@@ -68,7 +68,7 @@ class Algorithm:
             if self.last_rule is None or self.last_rule[2]:
                 break
             counter += 1
-            if max_times is not None and counter >= max_times:
+            if max_tacts is not None and counter >= max_tacts:
                 raise TimeoutError("algorithm hasn't been stopped")
 
         return string
