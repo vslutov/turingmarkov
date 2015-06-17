@@ -2,11 +2,11 @@
 
 """Turing machine and markov algorithm emulator.
 
-Algorithm are compiling to python.
-Read the doc: <https://github.com/vslutov/turingmarkov>"""
+Algorithm are compiling to python code or executing.
+Read the doc: <https://github.com/vslutov/turingmarkov>
+"""
 
-import os
-from setuptools import setup, find_packages, Command
+from setuptools import setup, find_packages
 
 VERSION = "0.1.2" # Don't forget fix in __main__.py
 
@@ -32,4 +32,4 @@ setup(name='turingmarkov',
       install_requires=['pytest'],
       packages=find_packages(),
       include_package_data=True,
-      entry_points={'console_scripts': ['turingmarkov = turingmarkov.__main__:main']})
+      entry_points={'console_scripts': ['turingmarkov = turingmarkov.__main__:exec_main']})
