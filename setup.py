@@ -8,7 +8,7 @@ Read the doc: <https://github.com/vslutov/turingmarkov>
 
 from setuptools import setup, find_packages
 
-VERSION = "0.1.2" # Don't forget fix in __main__.py
+VERSION = "0.1.3" # Don't forget fix in __main__.py
 
 setup(name='turingmarkov',
       version=VERSION,

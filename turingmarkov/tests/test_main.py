@@ -20,13 +20,13 @@ def test_load_markov(tmpdir):
 def test_load_turing(tmpdir):
     """Result should be Turing Machine."""
     input_path = tmpdir.join('double.markov')
-    input_path.write('a b c _\n\n0 ,R, ,R, ,R, a,N,!\n')
+    input_path.write('a b c _\n\n0 - ,R, ,R, a,N,!\n')
     machine = load_turing(['turingmarkov', 'run', 'turing', str(input_path)], None)
     assert machine.alphabet == ['a', 'b', 'c', '_']
-    assert machine.states == {'0': [['a', 'R', '0'],
-                                    ['b', 'R', '0'],
-                                    ['c', 'R', '0'],
-                                    ['a', 'N', '!']]}
+    assert machine.states['0'] == [None,
+                                   ['b', 'R', '0'],
+                                   ['c', 'R', '0'],
+                                   ['a', 'N', '!']]
 
 def test_compile_turing(tmpdir):
     """Result should be python code."""
