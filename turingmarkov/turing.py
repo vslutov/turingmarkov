@@ -6,11 +6,11 @@ TEMPLATE = """#!/bin/env python3
 # -*- coding: utf-8 -*-
 from turingmarkov.turing import Machine
 from sys import stdin
-machine = Machine()
 """
 
 
 class Machine:
+
     """Turing Machine emulator.
 
     Read the doc: https://github.com/cmc-python/turingmarkov
@@ -40,16 +40,20 @@ class Machine:
 
     def _add_rule(self, state, rule):
         """Parse rule and add it to machine (for internal use)."""
-        parsed_rule = rule.split(',')
+        if rule.strip() == "-":
+            parsed_rule = None
+        else:
+            parsed_rule = rule.split(',')
 
-        if  (len(parsed_rule) != 3 or
-             parsed_rule[1] not in ['L', 'N', 'R'] or
-             len(parsed_rule[2]) > 1):
-            raise SyntaxError('Wrong format of rule: ' + rule)
-        if parsed_rule[0] == "":
-            parsed_rule[0] = self.alphabet[len(self.states[state])]
-        if parsed_rule[2] == "":
-            parsed_rule[2] = state
+            if  (len(parsed_rule) != 3 or
+                 parsed_rule[1] not in ['L', 'N', 'R'] or
+                 len(parsed_rule[2]) > 1):
+                raise SyntaxError('Wrong format of rule: ' + rule)
+
+            if parsed_rule[0] == "":
+                parsed_rule[0] = self.alphabet[len(self.states[state])]
+            if parsed_rule[2] == "":
+                parsed_rule[2] = state
 
         self.states[state].append(parsed_rule)
 
@@ -76,7 +80,7 @@ class Machine:
                     self.states.pop(state)
                     raise err
 
-    def check_semantic(self):
+    def check(self):
         """Check semantic rules."""
         has_term = False
 
@@ -85,10 +89,11 @@ class Machine:
 
         for state in self.states:
             for rule in self.states[state]:
-                if rule[2] == self.TERM_STATE:
-                    has_term = True
-                elif rule[2] not in self.states:
-                    raise SyntaxError('Unexpected state: ' + rule[2])
+                if rule is not None:
+                    if rule[2] == self.TERM_STATE:
+                        has_term = True
+                    elif rule[2] not in self.states:
+                        raise SyntaxError('Unexpected state: ' + rule[2])
 
         if not has_term:
             raise SyntaxError('Missed terminate state')
@@ -99,7 +104,7 @@ class Machine:
             if char not in self.alphabet and not char.isspace() and char != self.EMPTY_SYMBOL:
                 raise RuntimeError('Invalid symbol: "' + char + '"')
 
-        self.check_semantic()
+        self.check()
         self.state = self.START_STATE
         self.head = 0
 
@@ -123,6 +128,9 @@ class Machine:
 
         index = self.alphabet.index(symbol)
         rule = self.states[self.state][index]
+
+        if rule is None:
+            raise RuntimeError('Unexpected symbol: ' + symbol)
 
         self.tape[self.head] = rule[0]
 
@@ -148,6 +156,22 @@ class Machine:
 
         return self.get_tape()
 
+    def compile(self):
+        """Return python code for create and execute machine."""
+        result = TEMPLATE
+        result += 'machine = Machine(' + repr(self.alphabet) + ')\n'
+
+        for state in self.states:
+            repr_state = state[0]
+            for rule in self.states[state]:
+                repr_state += ' ' + (','.join(rule) if rule is not None else '-')
+
+            result += ("machine.add_state({repr_state})\n".format(repr_state=repr(repr_state)))
+
+        result += "for line in stdin:\n"
+        result += "    print(machine.execute(line))"
+        return result
+
 def build_machine(lines):
     """Build machine from list of lines."""
     if lines == []:
@@ -157,5 +181,5 @@ def build_machine(lines):
         for line in lines[1:]:
             if line.strip() != '':
                 machine.add_state(line)
-    machine.check_semantic()
+    machine.check()
     return machine

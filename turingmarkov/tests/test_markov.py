@@ -143,6 +143,6 @@ class TestAlgorithm:
         self.algo = Algorithm(["'x->xx'", "'=>", "->'"])
         algo = self.algo.compile()
         assert isinstance(algo, str)
-        assert "'\\'x->xx\\''" in algo
-        assert "'\\'=>'" in algo
-        assert "'->\\''" in algo
+        assert "\"'x->xx'\"" in algo
+        assert "\"'=>\"" in algo
+        assert "\"->'\"" in algo

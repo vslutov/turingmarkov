@@ -43,12 +43,22 @@ def main(argv, stdin, stdout):
         algo = load_markov(argv, stdin)
         for line in stdin:
             print(algo.execute(''.join(line.split())), file=stdout)
+
+    elif len(argv) > 1 and argv[1:3] == ["compile", "turing"]:
+        machine = load_turing(argv, stdin)
+        print(machine.compile(), file=stdout)
+    elif len(argv) == 4 and argv[1:3] == ["run", "turing"]:
+        machine = load_turing(argv, stdin)
+        for line in stdin:
+            print(machine.execute(line), file=stdout)
+
     elif len(argv) == 2 and argv[1] == "test":
         path = os.path.abspath(os.path.dirname(__file__))
         argv[1] = path
         pytest.main()
     elif len(argv) == 2 and argv[1] == "version":
         print("TuringMarkov", VERSION, file=stdout)
+
     else:
         print(USAGE, file=stdout)
         if not (len(argv) == 2 and argv[1] == "help"):
@@ -57,6 +67,3 @@ def main(argv, stdin, stdout):
 def exec_main():
     """Hook for testability."""
     main(sys.argv, sys.stdin, sys.stdout)
-
-if __name__ == "__main__":
-    exec_main()

@@ -78,14 +78,13 @@ class Algorithm:
         result = TEMPLATE
 
         for rule in self.rules:
-            quotted_rule = tuple(part.replace("'", "\\'") for part in rule[:2])
             if rule[2]:
                 arrow = '=>'
             else:
                 arrow = '->'
+            repr_rule = repr(rule[0] + arrow + rule[1])
 
-            result += ("algo.add_rule('{left}{arrow}{right}')\n"
-                       .format(left=quotted_rule[0], right=quotted_rule[1], arrow=arrow))
+            result += "algo.add_rule({repr_rule})\n".format(repr_rule=repr_rule)
 
         result += "for line in stdin:\n"
         result += "    print(algo.execute(''.join(line.split())))"

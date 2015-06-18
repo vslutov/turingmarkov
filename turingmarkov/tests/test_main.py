@@ -28,6 +28,45 @@ def test_load_turing(tmpdir):
                                     ['c', 'R', '0'],
                                     ['a', 'N', '!']]}
 
+def test_compile_turing(tmpdir):
+    """Result should be python code."""
+    input_path = tmpdir.join('append.turing')
+    input_path.write('a b c _\n\n0 ,R, ,R, ,R, a,N,!\n')
+    output_path = tmpdir.join('append.py')
+
+    with open(str(output_path), 'w') as stdout:
+        main(['turingmarkov', 'compile', 'turing', str(input_path)], None, stdout)
+
+    machine = output_path.read()
+    assert "# -*- coding: utf-8 -*-" in machine
+    assert "from turingmarkov.turing import Machine\n" in machine
+    assert "machine = Machine(['a', 'b', 'c', '_'])\n" in machine
+    assert "machine.add_state('0 a,R,0 b,R,0 c,R,0 a,N,!')\n" in machine
+
+    with open(str(input_path)) as stdin:
+        with open(str(output_path), 'w') as stdout:
+            main(['turingmarkov', 'compile', 'turing'], stdin, stdout)
+
+    machine = output_path.read()
+    assert "# -*- coding: utf-8 -*-" in machine
+    assert "from turingmarkov.turing import Machine\n" in machine
+    assert "machine = Machine(['a', 'b', 'c', '_'])\n" in machine
+    assert "machine.add_state('0 a,R,0 b,R,0 c,R,0 a,N,!')\n" in machine
+
+def test_run_turing(tmpdir):
+    """Easy double word test."""
+    machine_path = tmpdir.join('append.turing')
+    machine_path.write('a b c _\n\n0 ,R, ,R, ,R, a,N,!\n')
+    input_path = tmpdir.join('input.txt')
+    input_path.write('abacab\n')
+    output_path = tmpdir.join('output.txt')
+
+    with open(str(input_path)) as stdin:
+        with open(str(output_path), 'w') as stdout:
+            main(['turingmarkov', 'run', 'turing', str(machine_path)], stdin, stdout)
+
+    assert output_path.read() == 'abacaba\n'
+
 def test_compile_markov(tmpdir):
     """Result should be python code."""
     input_path = tmpdir.join('double.markov')
