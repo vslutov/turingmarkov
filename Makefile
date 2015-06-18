@@ -27,5 +27,8 @@ pep257 :
 install :
 	python setup.py build install
 
+install-ejudge-binding :
+	cp ejudge-binding/* /home/judges/compile/scripts/
+
 develop :
 	python setup.py develop

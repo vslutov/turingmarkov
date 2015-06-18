@@ -1,0 +1,96 @@
+#!/bin/sh
+
+# Ejudge binding for turing compiler.
+
+# Based on:
+# * https://ejudge.ru/wiki/index.php/Foo-version.in
+# * https://github.com/blackav/ejudge/tree/master/scripts
+
+LANG_CONFIG_DIR="/home/judges/compile/conf/lang.d"
+
+common_config() {
+  echo 'long_name="Turing Machine"'
+  echo 'short_name="turing"'
+  echo 'src_sfx=".turing"'
+  echo 'arch="linux-shared"'
+}
+
+failure() {
+  rm -f conftest*
+  echo 'version='
+  echo 'arg="'"${arg}"'"'
+  common_config
+  echo 'TURINGPATH=/bin/false'
+  [ "${verbose}" = 1 ] && echo "no" >&2
+  exit 1
+}
+
+unset LANG
+unset LC_ALL
+unset LC_MESSAGES
+unset LANGUAGE
+
+if [ x"$1" = x-v ]
+then
+  verbose=1
+  shift
+fi
+
+# recheck the language
+if [ x"$1" = x-r ]
+then
+  arg="$2"
+  [ x"$2" != x ] && compiler="$2"
+  [ "${compiler}" = "" ] && compiler="turingmarkov"
+
+  [ "${verbose}" = 1 ] && echo -n "checking whether Turing Machine is available..." >&2
+  "${compiler}" version >/dev/null 2>&1 || failure
+  version=`"${compiler}" version 2>&1 | gawk '{ print $2; }'` || failure
+  [ "${version}" != "" ] || failure
+  TURINGPATH=`which "${compiler}"` || failure
+  [ "${TURINGPATH}" != "" ] || failure
+  echo "a _" > conftest.turing
+  echo "0 ,R, ,N,!" >> conftest.turing
+  ${TURINGPATH} compile turing conftest.turing >/dev/null 2>&1 || failure
+
+  rm -f ./conftest*
+  echo 'version="'"${version}"'"'
+  echo 'arg="'"${arg}"'"'
+  common_config
+  echo 'TURINGPATH="'"${TURINGPATH}"'"'
+  [ "${verbose}" = 1 ] && echo "yes, ${TURINGPATH}, ${version}" >&2
+  exit 0
+fi
+
+if [ x"$1" = x-l ]
+then
+  echo "Turing Machine [https://github.com/cmc-python/turingmarkov]"
+  exit 0
+fi
+
+[ "${EJUDGE_LANG_CONFIG}" = "" ] && EJUDGE_LANG_CONFIG="${LANG_CONFIG_DIR}/turing.cfg"
+
+if [ -f "${EJUDGE_LANG_CONFIG}" ]
+then
+  . "${EJUDGE_LANG_CONFIG}"
+else
+  TURINGPATH=`which turingmarkov 2>/dev/null` || TURINGPATH=/bin/false
+fi
+
+if [ x"${TURINGPATH}" = x -o x"${TURINGPATH}" = x/bin/false ]
+then
+  echo "This language is not supported." >&2
+  exit 1
+fi
+
+if [ x"$1" = x-p ]
+then
+    echo "${TURINGPATH}"
+    exit 0
+fi
+
+"${TURINGPATH}" version 2>/dev/null >/dev/null || exit 1
+
+[ x"$1" = x-f ] && echo -n "Turing Machine "
+
+"${TURINGPATH}" version 2>&1 | gawk '{ print $2; }'

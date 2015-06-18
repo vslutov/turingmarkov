@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Ejudge binding for markov compiler.
+
+# Based on:
+# * https://ejudge.ru/wiki/index.php/Foo-version.in
+# * https://github.com/blackav/ejudge/tree/master/scripts
+
+LANG_CONFIG_DIR="/home/judges/compile/conf/lang.d"
+[ "${EJUDGE_LANG_CONFIG}" = "" ] && EJUDGE_LANG_CONFIG="${LANG_CONFIG_DIR}/markov.cfg"
+
+if [ -f "${EJUDGE_LANG_CONFIG}" ]
+then
+  . "${EJUDGE_LANG_CONFIG}"
+else
+  version="unknown"
+  MARKOVPATH=`which turingmarkov 2>/dev/null` || MARKOVPATH=/bin/false
+fi
+
+if [ x"${version}" = x -o x"${MARKOVPATH}" = x/bin/false ]
+then
+  echo "This language is not supported." >&2
+  exit 1
+fi
+
+${MARKOVPATH} compile markov $1 >$2 || exit 1
+chmod +x $2
+exit 0
