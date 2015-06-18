@@ -6,7 +6,7 @@ from .markov import Algorithm
 from .turing import build_machine
 import pytest, os, sys
 
-VERSION = "0.1.3" # Don't forget fix in setup.py
+VERSION = "0.1.4" # Don't forget fix in setup.py
 
 USAGE = '''Usage: turingmarkov command [file]
 Available commands:
